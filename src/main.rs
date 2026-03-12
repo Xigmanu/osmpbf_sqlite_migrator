@@ -1,3 +1,5 @@
+use clap::{Parser};
+
 use crate::migrate::migrate;
 
 mod db;
@@ -12,11 +14,21 @@ macro_rules! println_staged {
     };
 }
 
+#[derive(Parser, Debug)]
+#[command(version, about, long_about=None)]
+struct Args {
+    #[arg(short, long)]
+    osmpath: String,
+    #[arg(short, long)]
+    outpath: String
+}
+
 //TODO Use args
 fn main() {
-    println!("### Beginning migration ###");
-    match migrate("assets/puerto-rico-260219.osm.pbf", "out/result.db") {
-        Ok(()) => println!("### FINISHED ###"),
+    let args = Args::parse();
+
+    match migrate(&args.osmpath, &args.outpath) {
+        Ok(()) => println!("Finished"),
         Err(e) => eprintln!("Unexpected error occurred: {e}"),
     };
 }
