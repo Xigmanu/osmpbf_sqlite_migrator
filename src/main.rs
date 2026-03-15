@@ -1,4 +1,4 @@
-use clap::{Parser};
+use clap::Parser;
 
 use crate::migrate::migrate;
 
@@ -18,17 +18,18 @@ macro_rules! println_staged {
 #[command(version, about, long_about=None)]
 struct Args {
     #[arg(short, long)]
-    osmpath: String,
+    pbf: String,
     #[arg(short, long)]
-    outpath: String
+    out: String,
 }
 
-//TODO Use args
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Args::parse();
 
-    match migrate(&args.osmpath, &args.outpath) {
-        Ok(()) => println!("Finished"),
-        Err(e) => eprintln!("Unexpected error occurred: {e}"),
-    };
+    let w = migrate(&args.pbf, &args.out).await;
+    match w {
+        Ok(_) => println!("Finished"),
+        Err(e) => eprintln!("Unexpected error occurred: {}", e),
+    }
 }
